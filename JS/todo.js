@@ -16,13 +16,12 @@ todo.controller('toDoCtrl', function($scope) {
         if (tasks >= 1) {show = true;};
         return show
     };
-    $scope.checkCompletedTasks = function() {
+    $scope.showClearCompleted = function() {
+        var disableButton = true;
         if ($('.list-group-item-success').length >= 1) {
-            completed = false;
-        } else {
-            completed = true;
+            disableButton = false;
         };
-        return completed
+        return disableButton;
     };
 });
 todo.directive('taskLi', function(){
@@ -38,7 +37,7 @@ todo.directive('toggleComplete', function(){
             var status
             el.on('click', function(){
                 $(this).toggleClass('list-group-item-success');
-                status = scope.checkCompletedTasks()
+                status = scope.showClearCompleted()
                 $('#clearComplete').prop('disabled', status);
             });
         }
@@ -59,7 +58,7 @@ todo.directive('clearSelected', function() {
                     });
                 });
                 items.remove();
-                status = scope.checkCompletedTasks()
+                status = scope.showClearCompleted()
                 $('#clearComplete').prop('disabled', status);
             });
         }
@@ -102,21 +101,3 @@ todo.directive('clearAll', function() {
 //         }
 //     };
 // });
-
-// $scope.updateStatusBar =  function() {
-//     var pendingTasks = $('.list-group-item').not('.list-group-item-success').length;
-//     var completedTasks = $('.list-group-item-success').length;
-//
-//     console.log("pending:" + pendingTasks + "completed:" + completedTasks);
-//
-//     progress = (completedTasks / (pendingTasks + completedTasks)) * 100
-//     console.log("progress:" + progress);
-//     if (progress) {
-//         $('#banner').html("Progress...");
-//         // $('.progress').show();
-//         $('.progress-bar').attr('aria-valuemax', pendingTasks + completedTasks);
-//         $('.progress-bar').attr('aria-valuenow', completedTasks);
-//         $('.progress-bar').css('width',  progress + '%');
-//         $('.progress-bar').html(Math.round(progress * 10) / 10 + '%');
-//     };
-// };
