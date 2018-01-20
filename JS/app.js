@@ -52,4 +52,5 @@ function initializeApp() {
             $scope.$apply();
         }
     });
+    application.refresh();
 };
