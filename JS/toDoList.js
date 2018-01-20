@@ -1,22 +1,18 @@
 var todo = angular.module('toDoList', []);
-todo.controller('toDoCtrl', function($scope) {
+todo.controller('toDoCtrl', function($scope, $timeout) {
     $scope.todos = []
-    $scope.tasksDone = 0
 
     $scope.addTask = function() {
         if ($scope.formTodoInput) {
             if ($scope.todos.indexOf($scope.formTodoInput) == -1) {
                 $scope.todos.push($scope.formTodoInput);
+                $scope.formTodoInput = '';
+                $timeout(function() {
+                    application.refresh();
+                })
             };
-            $scope.formTodoInput = '';
-            $('#myInput').focus();
-            $('#clearAll').prop('disabled', false);
-            // FIXME: add 1 teask completed add another, error occurs use directive update-list
         };
     };
-});
-todo.directive('updateList', function(){
-    
 });
 todo.directive('taskLi', function(){
     return {
@@ -24,21 +20,23 @@ todo.directive('taskLi', function(){
         template: '<li class="list-group-item" ng-repeat="todo in todos" toggle-complete>{{todo}}</li>'
     };
 });
-todo.directive('toggleComplete', function(){
+todo.directive('toggleComplete', function($timeout){
     return {
         restrict: 'A',
         link: function(scope, el, attrs) {
-            var status
-            el.on('click', function(){
-                $(this).toggleClass('list-group-item-success');
-                $('#myInput').focus();
-                scope.tasksDone = $('.list-group-item-success').length;
-                application.refresh();
+            $timeout(function() {
+                var status
+                el.on('click', function(){
+                    $(this).toggleClass('list-group-item-success');
+                    $('#myInput').focus();
+                    scope.tasksDone = $('.list-group-item-success').length;
+                    application.refresh();
+                });
             });
         }
     };
 });
-todo.directive('clearSelected', function() {
+todo.directive('clearSelected', function($timeout) {
     return {
         restrict: 'A',
         link: function(scope, el, attrs) {
@@ -55,17 +53,14 @@ todo.directive('clearSelected', function() {
                 scope.tasksDone = completedTasks.length
                 completedTasks.remove();
                 $('#myInput').focus();
-                application.refresh();
-                // Force the app to update ng-show directive in progress bar"
-                // otherwise it will not update until user starts typing again
-                if (scope.todos.length == 0) {
-                    scope.$apply();
-                };
+                $timeout(function(){
+                    application.refresh();
+                })
             });
         }
     }
 });
-todo.directive('clearAll', function() {
+todo.directive('clearAll', function($timeout) {
     return {
         restrict: 'A',
         link: function(scope, el, attrs) {
@@ -75,10 +70,9 @@ todo.directive('clearAll', function() {
                 scope.todos = []
                 scope.tasksDone = 0
                 $('#myInput').focus();
-                application.refresh();
-                // Force the app to update ng-show directive in progress bar"
-                // otherwise it will not update until user starts typing again
-                scope.$apply();
+                $timeout(function(){
+                    application.refresh();
+                })
             });
         }
     }

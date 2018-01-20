@@ -1,8 +1,6 @@
 var application =  (function() {
     return {
         refresh: function() {
-            var pending = 0
-            var done = 0
             var disableAllButton = function(bool) {
                 $('#clearAll').prop('disabled', bool);
             };
