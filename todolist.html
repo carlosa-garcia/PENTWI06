@@ -4,8 +4,10 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>Building Responsive UI with Bootstrap</title>
+        <!-- Boostrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
         <link rel="stylesheet" href="CSS/cover.css">
+        <!-- Custom CSS -->
         <link rel="stylesheet" href="CSS/app.css">
     </head>
 
@@ -17,14 +19,14 @@
                  <h2 class="cover-heading">To Do List</h2>
                  <p class="lead">
                    <p id="banner">Awesome task app.</p>
-                   <div class="progress" ng-show="checkTasks()">
+                   <div class="progress" ng-show="todos.length >= 1">
                        <div class="progress-bar bg-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                    </div>
                  </p>
                     <div class="input-group">
                         <span class="input-group-addon">Task:</span>
                         <input type="text" class="form-control" id="myInput" ng-model="formTodoInput" placeholder="Enter action here..."></input>
-                        <button ng-click="addTask()">Add</button>
+                        <button ng-click="addTask()" update-list>Add</button>
                     </div>
                     <br>
                     <ul id="todo-list" class="list-group">
@@ -37,34 +39,25 @@
                     <button type="button" class="btn btn-danger" id="clearAll" clear-All>Clear All</button>
                  </p>
                </main>
-
              </div>
-
            </div>
-
          </div>
 
+         <!-- jQuery JS-->
          <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+         <!-- Bootstrap -->
          <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
-         <!-- <script src="JS/app.js"></script> -->
+         <!-- AngularJS Library -->
          <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular.min.js"></script>
-         <!-- AngularJS -->
-         <script type="text/javascript" src="JS/todo.js"></script>
+         <!-- AngularJS Modules -->
+         <script type="text/javascript" src="JS/toDoList.js"></script>
          <!-- Custom JS -->
          <script type="text/javascript" src="JS/app.js"></script>
          <script type="text/javascript">
-             $(document).ready(function () {
-                     updateStatusBar();
-                     $('#myInput').keypress(function (event) {
-                         var keycode = (event.keyCode ? event.keyCode : event.which);
-                         if (keycode == '13') {
-                             var $scope = angular.element('#myInput').scope();
-                             $scope.addTask();
-                             $scope.$apply();
-                         }
-                     })
-             })
+             $(document).ready(function() {
+                 initializeApp();
+             });
          </script>
     </body>
 </html>
