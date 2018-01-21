@@ -1,5 +1,6 @@
 var todo = angular.module('toDoList', []);
 todo.controller('toDoCtrl', function($scope, $timeout) {
+    // Load saved task list if exists
     arrayData = localStorage.getItem('ToDoList');
     if ( arrayData === null) {
         $scope.todos = []
@@ -11,29 +12,41 @@ todo.controller('toDoCtrl', function($scope, $timeout) {
         }
     };
     $scope.saveList = function() {
-        localStorage.setItem('ToDoList', JSON.stringify($scope.todos));
+        localStorage.setItem('ToDoList', angular.toJson($scope.todos));
     };
-
+    taskExists = function(stringToVerify) {
+        stringExists = false;
+        if ($scope.todos.length >= 1) {
+            $scope.todos.forEach(function(obj, objIndex) {
+                if (stringToVerify == obj.text) {
+                    stringExists = true;
+                };
+            });
+        };
+        return stringExists;
+    };
     $scope.addTask = function() {
-        if ($scope.formTodoInput) {
-            if ($scope.todos.indexOf($scope.formTodoInput) == -1) {
-                $scope.todos.push({text:$scope.formTodoInput, completed: false});
-                $scope.formTodoInput = '';
-                // Trough out this file you will see $timeout being used
-                // this is to allow the angular to properly update the DOM
-                // before executing the progress bar code.
-                $timeout(function() {
-                    application.refresh();
-                })
-                $scope.saveList()
+        newTask = $scope.formTodoInput;
+        if (newTask) {
+            repeatedTask = taskExists(newTask);
+            if (repeatedTask == false) {
+                $scope.todos.push({text:newTask, completed: false});
             };
+            $scope.formTodoInput = '';
+            // Trough out this file you will see $timeout being used
+            // this is to allow the angular to properly update the DOM
+            // before executing the progress bar code.
+            $timeout(function() {
+                application.refresh();
+            })
+            $scope.saveList()
         };
     };
 });
 todo.directive('taskLi', function(){
     return {
         restrict: 'E',
-        template: '<li class="list-group-item" ng-repeat="todo in todos track by $index" ng-class="{{todo.completed}} ? \'list-group-item-success\' : \'\'" toggle-complete>{{todo.text}}</li>'
+        template: '<li class="list-group-item" ng-repeat="todo in todos" ng-class="{{todo.completed}} ? \'list-group-item-success\' : \'\'" toggle-complete>{{todo.text}}</li>'
     };
 });
 todo.directive('toggleComplete', function($timeout){
@@ -74,10 +87,10 @@ todo.directive('clearSelected', function($timeout) {
                 });
                 completedTasks.remove();
                 $('#myInput').focus();
+                scope.saveList()
                 $timeout(function(){
                     application.refresh();
                 })
-                scope.saveList()
             });
         }
     }
