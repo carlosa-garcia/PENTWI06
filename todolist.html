@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="us" ng-app="toDoList">
+<html lang="en" data-ng-app="toDoList">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -11,7 +11,7 @@
         <link rel="stylesheet" href="CSS/app.css">
     </head>
 
-    <body ng-controller="toDoCtrl">
+    <body data-ng-controller="toDoCtrl">
         <div class="site-wrapper">
            <div class="site-wrapper-inner">
              <div class="cover-container">
@@ -19,14 +19,14 @@
                  <h2 class="cover-heading">To Do List</h2>
                  <p class="lead">
                    <p id="banner">Awesome task app.</p>
-                   <div class="progress" ng-show="todos.length >= 1">
+                   <div class="progress" data-ng-show="todos.length >= 1">
                        <div class="progress-bar bg-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                    </div>
                  </p>
                     <div class="input-group">
                         <span class="input-group-addon">Task:</span>
-                        <input type="text" class="form-control" id="myInput" ng-model="formTodoInput" placeholder="Enter action here..."></input>
-                        <button ng-click="addTask()">Add</button>
+                        <input type="text" class="form-control" id="myInput" data-ng-model="formTodoInput" placeholder="Enter action here...">
+                        <button data-ng-click="addTask()">Add</button>
                     </div>
                     <br>
                     <ul id="todo-list" class="list-group">
