@@ -1,18 +1,34 @@
 var todo = angular.module('toDoList', []);
-todo.controller('toDoCtrl', function($scope, $timeout) {
-    // Load saved task list if exists
-    arrayData = localStorage.getItem('ToDoList');
-    if ( arrayData === null) {
-        $scope.todos = []
-    } else {
+todo.config(function ($provide) {
+    var loadLocalStorage = function() {
         try {
-            $scope.todos = JSON.parse(arrayData);
-        } catch(err) {
-            $scope.todos = arrayData;
+            rawStorage = localStorage.getItem('ToDoList');
+            try {
+                storage = JSON.parse(rawStorage);
+            } catch(err) {
+                storage = rawStorage;
+            };
         }
+        catch(err) {
+            storage = []
+        };
+        return storage;
     };
-    $scope.saveList = function() {
-        localStorage.setItem('ToDoList', angular.toJson($scope.todos));
+    $provide.factory('storage', function() {
+        return {
+            load: loadLocalStorage,
+            save: function(obj) {
+                localStorage.setItem('ToDoList', angular.toJson(obj));
+            }
+        }
+    });
+});
+todo.controller('toDoCtrl', function($scope, $timeout, storage) {
+    storedData = storage.load();
+    if (storedData != null && storedData.length >= 1) {
+        $scope.todos = storedData;
+    } else {
+        $scope.todos = [];
     };
     taskExists = function(stringToVerify) {
         stringExists = false;
@@ -39,7 +55,7 @@ todo.controller('toDoCtrl', function($scope, $timeout) {
             $timeout(function() {
                 application.refresh();
             })
-            $scope.saveList()
+            storage.save($scope.todos)
         };
     };
 });
@@ -49,7 +65,7 @@ todo.directive('taskLi', function(){
         template: '<li class="list-group-item" ng-repeat="todo in todos" ng-class="{{todo.completed}} ? \'list-group-item-success\' : \'\'" toggle-complete>{{todo.text}}</li>'
     };
 });
-todo.directive('toggleComplete', function($timeout){
+todo.directive('toggleComplete', function($timeout, storage){
     return {
         restrict: 'A',
         link: function(scope, el, attrs) {
@@ -65,13 +81,13 @@ todo.directive('toggleComplete', function($timeout){
                     });
                     $('#myInput').focus();
                     application.refresh();
-                    scope.saveList()
+                    storage.save(scope.todos)
                 });
             });
         }
     };
 });
-todo.directive('clearSelected', function($timeout) {
+todo.directive('clearSelected', function($timeout, storage) {
     return {
         restrict: 'A',
         link: function(scope, el, attrs) {
@@ -87,7 +103,7 @@ todo.directive('clearSelected', function($timeout) {
                 });
                 completedTasks.remove();
                 $('#myInput').focus();
-                scope.saveList()
+                storage.save(scope.todos);
                 $timeout(function(){
                     application.refresh();
                 })
@@ -95,7 +111,7 @@ todo.directive('clearSelected', function($timeout) {
         }
     }
 });
-todo.directive('clearAll', function($timeout) {
+todo.directive('clearAll', function($timeout, storage) {
     return {
         restrict: 'A',
         link: function(scope, el, attrs) {
@@ -104,7 +120,7 @@ todo.directive('clearAll', function($timeout) {
                 $(items).remove();
                 scope.todos = []
                 $('#myInput').focus();
-                scope.saveList()
+                storage.save(scope.todos);
                 $timeout(function(){
                     application.refresh();
                 })
