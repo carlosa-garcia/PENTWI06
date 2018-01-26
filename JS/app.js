@@ -1,4 +1,4 @@
-var application =  (function() {
+var app =  (function() {
     return {
         refresh: function() {
             var disableAllButton = function(bool) {
@@ -44,13 +44,13 @@ function initializeApp() {
     $('#myInput').focus();
     $('#clearComplete').prop('disabled', true);
     $('#clearAll').prop('disabled', true);
-    $('#myInput').keypress(function (event) {
-        var keycode = (event.keyCode ? event.keyCode : event.which);
-        var $scope = angular.element('#myInput').scope();
-        if (keycode == '13') {
-            $scope.addTask();
-            $scope.$apply();
-        }
-    });
-    application.refresh();
+    // $('#myInput').keypress(function (event) {
+    //     var keycode = (event.keyCode ? event.keyCode : event.which);
+    //     var $scope = angular.element('#myInput').scope();
+    //     if (keycode == '13') {
+    //         $scope.addTask();
+    //         $scope.$apply();
+    //     }
+    // });
+    app.refresh();
 };
