@@ -14,10 +14,10 @@ todo.factory('application', function() {
                 .css('width',  width)
                 .html(html);
             };
-            pending = $('.list-group-item').not('.list-group-item-success').length;
-            done = $('.list-group-item-success').length;
+            pendingTasks = $('.list-group-item').not('.list-group-item-success').length;
+            completedTasks = $('.list-group-item-success').length;
 
-            if (pending === 0 && done === 0) {
+            if (pendingTasks === 0 && completedTasks === 0) {
                 $('.progress').hide();
                 $('#banner').html('Awesome task app.')
                 disableCompletedButton(true);
@@ -25,16 +25,16 @@ todo.factory('application', function() {
                 updateProgressBar(0, 0, '0%', '0%');
             } else {
                 disableAllButton(false);
-                progress = (done / (pending + done)) * 100;
+                progress = (completedTasks / (pendingTasks + completedTasks)) * 100;
                 $('#banner').html("Progress...");
                 $('.progress').show();
-                updateProgressBar(pending + done, done, progress + '%', Math.round(progress * 10) / 10 + '%');
-            };
-            if (done === 0) {
+                updateProgressBar(pendingTasks + completedTasks, completedTasks, progress + '%', Math.round(progress * 10) / 10 + '%');
+            }
+            if (completedTasks === 0) {
                 disableCompletedButton(true)
             } else {
                 disableCompletedButton(false)
-            };
+            }
             $('#myInput').focus();
         }
     }
@@ -47,11 +47,11 @@ todo.factory('storage', function() {
                 storage = JSON.parse(rawStorage);
             } catch(err) {
                 storage = rawStorage;
-            };
+            }
         }
         catch(err) {
             storage = []
-        };
+        }
         return storage;
     };
     return {
@@ -76,31 +76,31 @@ todo.controller('toDoCtrl', function($scope, $timeout, storage, application) {
         $scope.todos = storedData;
     } else {
         $scope.todos = [];
-    };
+    }
     taskExists = function(stringToVerify) {
         stringExists = false;
         if ($scope.todos.length >= 1) {
             $scope.todos.forEach(function(obj, objIndex) {
                 if (stringToVerify == obj.text) {
                     stringExists = true;
-                };
+                }
             });
-        };
+        }
         return stringExists;
     };
     $scope.addTask = function() {
         newTask = $scope.formTodoInput;
         if (newTask) {
             repeatedTask = taskExists(newTask);
-            if (repeatedTask == false) {
+            if (repeatedTask === false) {
                 $scope.todos.push({text:newTask, completed: false});
-            };
+            }
             $scope.formTodoInput = '';
             $timeout(function() {
                 application.refresh();
             })
             storage.save($scope.todos)
-        };
+        }
     };
 });
 todo.directive('taskLi', function(){
@@ -134,7 +134,7 @@ todo.directive('toggleComplete', function($timeout, storage, application){
                     scope.todos.forEach(function(obj, objIndex) {
                         if (taskName == obj.text) {
                             obj.completed = !obj.completed;
-                        };
+                        }
                     });
                     $('#myInput').focus();
                     application.refresh();
@@ -155,7 +155,7 @@ todo.directive('clearSelected', function($timeout, storage, application) {
                     scope.todos.forEach(function(obj, objIndex) {
                         if (taskName === obj.text) {
                             scope.todos.splice(objIndex, 1);
-                        };
+                        }
                     });
                 });
                 completedTasks.remove();
