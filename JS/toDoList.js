@@ -113,7 +113,7 @@ todo.directive('submitOnEnter', function() {
     return {
         restrict: 'A',
         link: function(scope, el, attrs) {
-            el.on('keypress', function(){
+            el.on('keypress', function(event){
                 var keycode = (event.keyCode ? event.keyCode : event.which);
                 if (keycode == '13') {
                     scope.addTask();
@@ -133,7 +133,7 @@ todo.directive('toggleComplete', function($timeout, storage, application){
                     taskName = $(this).text();
                     scope.todos.forEach(function(obj, objIndex) {
                         if (taskName == obj.text) {
-                            obj.completed = true;
+                            obj.completed = !obj.completed;
                         };
                     });
                     $('#myInput').focus();
