@@ -1,5 +1,5 @@
 var todo = angular.module('toDoList', []);
-todo.factory('application', function() {
+todo.factory('application', function($timeout) {
     return {
         refresh: function() {
             var disableAllButton = function(bool) {
@@ -14,28 +14,34 @@ todo.factory('application', function() {
                 .css('width',  width)
                 .html(html);
             };
-            pendingTasks = $('.list-group-item').not('.list-group-item-success').length;
-            completedTasks = $('.list-group-item-success').length;
 
-            if (pendingTasks === 0 && completedTasks === 0) {
-                $('.progress').hide();
-                $('#banner').html('Awesome task app.')
-                disableCompletedButton(true);
-                disableAllButton(true);
-                updateProgressBar(0, 0, '0%', '0%');
-            } else {
-                disableAllButton(false);
-                progress = (completedTasks / (pendingTasks + completedTasks)) * 100;
-                $('#banner').html("Progress...");
-                $('.progress').show();
-                updateProgressBar(pendingTasks + completedTasks, completedTasks, progress + '%', Math.round(progress * 10) / 10 + '%');
-            }
-            if (completedTasks === 0) {
-                disableCompletedButton(true)
-            } else {
-                disableCompletedButton(false)
-            }
-            $('#myInput').focus();
+            // Trough out this file you will see $timeout being used
+            // this is to allow the angular to properly update the DOM
+            // before executing the progress bar code.
+            $timeout(function() {
+                pendingTasks = $('.list-group-item').not('.list-group-item-success').length;
+                completedTasks = $('.list-group-item-success').length;
+
+                if (pendingTasks === 0 && completedTasks === 0) {
+                    $('.progress').hide();
+                    $('#banner').html('Awesome task app.')
+                    disableCompletedButton(true);
+                    disableAllButton(true);
+                    updateProgressBar(0, 0, '0%', '0%');
+                } else {
+                    disableAllButton(false);
+                    progress = (completedTasks / (pendingTasks + completedTasks)) * 100;
+                    $('#banner').html("Progress...");
+                    $('.progress').show();
+                    updateProgressBar(pendingTasks + completedTasks, completedTasks, progress + '%', Math.round(progress * 10) / 10 + '%');
+                }
+                if (completedTasks === 0) {
+                    disableCompletedButton(true)
+                } else {
+                    disableCompletedButton(false)
+                }
+                $('#myInput').focus();
+            });
         }
     }
 });
@@ -63,9 +69,6 @@ todo.factory('storage', function() {
 });
 // todo.config(function ($provide) {});
 todo.run(function($timeout, application) {
-    // Trough out this file you will see $timeout being used
-    // this is to allow the angular to properly update the DOM
-    // before executing the progress bar code.
     $timeout(function(){
         application.refresh();
     });
@@ -96,10 +99,11 @@ todo.controller('toDoCtrl', function($scope, $timeout, storage, application) {
                 $scope.todos.push({text:newTask, completed: false});
             }
             $scope.formTodoInput = '';
+            storage.save($scope.todos)
             $timeout(function() {
+                console.log('Task added!');
                 application.refresh();
             })
-            storage.save($scope.todos)
         }
     };
 });
@@ -136,7 +140,6 @@ todo.directive('toggleComplete', function($timeout, storage, application){
                             obj.completed = !obj.completed;
                         }
                     });
-                    $('#myInput').focus();
                     application.refresh();
                     storage.save(scope.todos)
                 });
@@ -159,7 +162,6 @@ todo.directive('clearSelected', function($timeout, storage, application) {
                     });
                 });
                 completedTasks.remove();
-                $('#myInput').focus();
                 storage.save(scope.todos);
                 $timeout(function(){
                     application.refresh();
@@ -176,7 +178,6 @@ todo.directive('clearAll', function($timeout, storage, application) {
                 var items = '.list-group-item';
                 $(items).remove();
                 scope.todos = []
-                $('#myInput').focus();
                 storage.save(scope.todos);
                 $timeout(function(){
                     application.refresh();
