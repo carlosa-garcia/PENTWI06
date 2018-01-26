@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- <meta http-equiv="X-UA-Compatible" content="IE=11" /> -->
         <title>Building Responsive UI with Bootstrap</title>
         <!-- Boostrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
@@ -25,7 +26,7 @@
                  </p>
                     <div class="input-group">
                         <span class="input-group-addon">Task:</span>
-                        <input type="text" class="form-control" id="myInput" data-ng-model="formTodoInput" placeholder="Enter action here...">
+                        <input type="text" class="form-control" id="myInput" data-ng-model="formTodoInput" submit-on-enter placeholder="Enter action here...">
                         <button data-ng-click="addTask()">Add</button>
                     </div>
                     <br>
@@ -49,15 +50,8 @@
          <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
          <!-- AngularJS Library -->
-         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
+         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
          <!-- AngularJS Modules -->
          <script type="text/javascript" src="JS/toDoList.js"></script>
-         <!-- Custom JS -->
-         <script type="text/javascript" src="JS/app.js"></script>
-         <script type="text/javascript">
-             $(document).ready(function() {
-                 initializeApp();
-             });
-         </script>
     </body>
 </html>

@@ -1,5 +1,45 @@
 var todo = angular.module('toDoList', []);
-todo.config(function ($provide) {
+todo.factory('application', function() {
+    return {
+        refresh: function() {
+            var disableAllButton = function(bool) {
+                $('#clearAll').prop('disabled', bool);
+            };
+            var disableCompletedButton = function(bool) {
+                $('#clearComplete').prop('disabled', bool);
+            };
+            var updateProgressBar = function(valueMax, valueNow, width, html) {
+                $('.progress-bar').attr('aria-valuemax', valueMax)
+                .attr('aria-valuenow', valueNow)
+                .css('width',  width)
+                .html(html);
+            };
+            pending = $('.list-group-item').not('.list-group-item-success').length;
+            done = $('.list-group-item-success').length;
+
+            if (pending === 0 && done === 0) {
+                $('.progress').hide();
+                $('#banner').html('Awesome task app.')
+                disableCompletedButton(true);
+                disableAllButton(true);
+                updateProgressBar(0, 0, '0%', '0%');
+            } else {
+                disableAllButton(false);
+                progress = (done / (pending + done)) * 100;
+                $('#banner').html("Progress...");
+                $('.progress').show();
+                updateProgressBar(pending + done, done, progress + '%', Math.round(progress * 10) / 10 + '%');
+            };
+            if (done === 0) {
+                disableCompletedButton(true)
+            } else {
+                disableCompletedButton(false)
+            };
+            $('#myInput').focus();
+        }
+    }
+});
+todo.factory('storage', function() {
     var loadLocalStorage = function() {
         try {
             rawStorage = localStorage.getItem('ToDoList');
@@ -14,16 +54,23 @@ todo.config(function ($provide) {
         };
         return storage;
     };
-    $provide.factory('storage', function() {
-        return {
-            load: loadLocalStorage,
-            save: function(obj) {
-                localStorage.setItem('ToDoList', angular.toJson(obj));
-            }
+    return {
+        load: loadLocalStorage,
+        save: function(obj) {
+            localStorage.setItem('ToDoList', angular.toJson(obj));
         }
+    };
+});
+// todo.config(function ($provide) {});
+todo.run(function($timeout, application) {
+    // Trough out this file you will see $timeout being used
+    // this is to allow the angular to properly update the DOM
+    // before executing the progress bar code.
+    $timeout(function(){
+        application.refresh();
     });
 });
-todo.controller('toDoCtrl', function($scope, $timeout, storage) {
+todo.controller('toDoCtrl', function($scope, $timeout, storage, application) {
     storedData = storage.load();
     if (storedData != null && storedData.length >= 1) {
         $scope.todos = storedData;
@@ -49,9 +96,6 @@ todo.controller('toDoCtrl', function($scope, $timeout, storage) {
                 $scope.todos.push({text:newTask, completed: false});
             };
             $scope.formTodoInput = '';
-            // Trough out this file you will see $timeout being used
-            // this is to allow the angular to properly update the DOM
-            // before executing the progress bar code.
             $timeout(function() {
                 application.refresh();
             })
@@ -65,7 +109,20 @@ todo.directive('taskLi', function(){
         template: '<li class="list-group-item" ng-repeat="todo in todos" ng-class="{{todo.completed}} ? \'list-group-item-success\' : \'\'" toggle-complete>{{todo.text}}</li>'
     };
 });
-todo.directive('toggleComplete', function($timeout, storage){
+todo.directive('submitOnEnter', function() {
+    return {
+        restrict: 'A',
+        link: function(scope, el, attrs) {
+            el.on('keypress', function(){
+                var keycode = (event.keyCode ? event.keyCode : event.which);
+                if (keycode == '13') {
+                    scope.addTask();
+                }
+            });
+        }
+    };
+});
+todo.directive('toggleComplete', function($timeout, storage, application){
     return {
         restrict: 'A',
         link: function(scope, el, attrs) {
@@ -87,7 +144,7 @@ todo.directive('toggleComplete', function($timeout, storage){
         }
     };
 });
-todo.directive('clearSelected', function($timeout, storage) {
+todo.directive('clearSelected', function($timeout, storage, application) {
     return {
         restrict: 'A',
         link: function(scope, el, attrs) {
@@ -111,7 +168,7 @@ todo.directive('clearSelected', function($timeout, storage) {
         }
     }
 });
-todo.directive('clearAll', function($timeout, storage) {
+todo.directive('clearAll', function($timeout, storage, application) {
     return {
         restrict: 'A',
         link: function(scope, el, attrs) {
